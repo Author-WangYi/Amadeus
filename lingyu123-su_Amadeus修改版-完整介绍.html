@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amadeus 音乐生成器 · 软件介绍</title>
+<style>
+  :root{
+    --bg:#f6f6fa;
+    --card:#ffffff;
+    --ink:#1c1c2b;
+    --ink-2:#4a4a5e;
+    --ink-3:#7b7b91;
+    --line:#e6e6ef;
+    --brand:#5b53d6;
+    --brand-soft:#eeecfd;
+    --warn:#c2410c;
+    --warn-soft:#fff3ec;
+    --ok:#0f766e;
+    --ok-soft:#e8f7f4;
+    --code-bg:#f2f2f7;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+    font-size:16px;
+    line-height:1.78;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px 100px}
+
+  /* ---------- 顶部 ---------- */
+  header.hero{
+    background:linear-gradient(160deg,#ffffff 0%,#f3f2fd 100%);
+    border-bottom:1px solid var(--line);
+    padding:64px 22px 52px;
+    text-align:center;
+  }
+  header.hero h1{
+    margin:0 0 14px;
+    font-size:2.1rem;
+    letter-spacing:-0.4px;
+    font-weight:700;
+  }
+  header.hero h1 span{color:var(--brand)}
+  header.hero .lede{
+    max-width:640px;margin:0 auto;
+    color:var(--ink-2);
+    font-size:1.05rem;
+  }
+  .badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+  .badge{
+    background:var(--brand-soft);
+    color:var(--brand);
+    border-radius:999px;
+    padding:6px 16px;
+    font-size:.86rem;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .badge.plain{background:#fff;color:var(--ink-2);border:1px solid var(--line)}
+
+  /* ---------- 导航 ---------- */
+  nav.toc{
+    position:sticky;top:0;z-index:20;
+    background:rgba(246,246,250,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    margin:0 -22px 44px;
+    padding:11px 22px;
+    display:flex;gap:8px;overflow-x:auto;
+    scrollbar-width:none;
+  }
+  nav.toc::-webkit-scrollbar{display:none}
+  nav.toc a{
+    color:var(--ink-2);text-decoration:none;font-size:.87rem;
+    padding:5px 12px;border-radius:8px;white-space:nowrap;font-weight:500;
+  }
+  nav.toc a:hover{background:var(--brand-soft);color:var(--brand)}
+
+  /* ---------- 标题 ---------- */
+  h2{
+    font-size:1.4rem;margin:64px 0 8px;font-weight:700;letter-spacing:-0.2px;
+    padding-top:8px;
+  }
+  h2::before{
+    content:"";display:block;width:36px;height:3px;border-radius:2px;
+    background:var(--brand);margin-bottom:16px;
+  }
+  h3{font-size:1.08rem;margin:34px 0 10px;font-weight:700}
+  h4{font-size:.97rem;margin:24px 0 8px;font-weight:700;color:var(--ink-2)}
+  p{margin:12px 0}
+  .sub{color:var(--ink-3);font-size:.9rem;margin-top:-4px}
+
+  /* ---------- 卡片 ---------- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin:20px 0;
+  }
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:20px 0}
+  .grid .card{margin:0}
+  .card h4{margin-top:0}
+  .card p:last-child{margin-bottom:0}
+
+  /* ---------- 表格 ---------- */
+  .tblwrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:520px}
+  th,td{padding:12px 15px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#fafafd;font-weight:700;color:var(--ink-2);font-size:.87rem;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  td.num{color:var(--ink-3);font-variant-numeric:tabular-nums;width:38px;text-align:center;font-weight:600}
+  td strong{color:var(--ink)}
+
+  /* ---------- 代码 ---------- */
+  code{
+    background:var(--code-bg);padding:2px 7px;border-radius:6px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,"Courier New",monospace;
+    font-size:.88em;color:#b03060;
+  }
+  pre{
+    background:#1d1d2b;color:#e8e8f0;padding:18px 20px;border-radius:var(--radius);
+    overflow-x:auto;font-size:.87rem;line-height:1.65;margin:16px 0;
+  }
+  pre code{background:none;color:inherit;padding:0;font-size:1em}
+  pre .cmt{color:#8888a8}
+
+  /* ---------- 提示块 ---------- */
+  .note{
+    border-left:4px solid var(--brand);background:var(--brand-soft);
+    border-radius:0 var(--radius) var(--radius) 0;
+    padding:15px 20px;margin:20px 0;font-size:.94rem;
+  }
+  .note.warn{border-color:var(--warn);background:var(--warn-soft)}
+  .note.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .note strong{display:block;margin-bottom:4px}
+  .note.warn strong{color:var(--warn)}
+  .note.ok strong{color:var(--ok)}
+  .note p{margin:6px 0 0}
+
+  /* ---------- 步骤 ---------- */
+  .steps{list-style:none;padding:0;margin:22px 0;counter-reset:s}
+  .steps li{
+    position:relative;padding:0 0 0 52px;margin-bottom:20px;counter-increment:s;
+  }
+  .steps li::before{
+    content:counter(s);
+    position:absolute;left:0;top:1px;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--brand);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.95rem;
+  }
+  .steps li b{display:block}
+
+  /* ---------- 目录树 ---------- */
+  .tree{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 24px;overflow-x:auto;margin:18px 0;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:.85rem;line-height:1.95;color:var(--ink-2);white-space:pre;
+  }
+  .tree b{color:var(--ink);font-weight:700}
+  .tree em{color:var(--brand);font-style:normal;font-weight:600}
+  .tree i{color:var(--ink-3);font-style:normal}
+
+  /* ---------- 对比 ---------- */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+  .vs .card{margin:0}
+  .vs .card.bad{border-color:#f0dcd2;background:#fffcf9}
+  .vs .card.good{border-color:#cfe9e3;background:#fafffd}
+  .vs .card h4{font-size:.93rem;display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .dot.bad{background:#e07a5f}
+  .dot.good{background:#4fb3a1}
+  .vs ul{margin:8px 0 0;padding-left:20px;font-size:.9rem;color:var(--ink-2)}
+  .vs ul li{margin:5px 0}
+
+  hr{border:none;border-top:1px solid var(--line);margin:52px 0 0}
+  footer{text-align:center;color:var(--ink-3);font-size:.87rem;padding:34px 0 0}
+
+  @media (max-width:640px){
+    header.hero{padding:44px 18px 36px}
+    header.hero h1{font-size:1.6rem}
+    .vs{grid-template-columns:1fr}
+    h2{font-size:1.24rem;margin-top:48px}
+    .wrap{padding:0 16px 70px}
+    nav.toc{margin:0 -16px 32px;padding:10px 16px}
+  }
+  @media print{
+    nav.toc{display:none}
+    body{background:#fff}
+    .card,.tblwrap,.tree{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Amadeus <span>音乐生成器</span></h1>
+  <p class="lede">输入一段英文描述，生成一首可编辑的曲子。完全离线运行，双击即用。</p>
+  <div class="badges">
+    <span class="badge">免安装</span>
+    <span class="badge">全程离线</span>
+    <span class="badge">双击启动</span>
+    <span class="badge">中文界面</span>
+    <span class="badge plain">Windows 10 / 11 64 位</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <a href="#what">这是什么</a>
+  <a href="#origin">原本怎么运行</a>
+  <a href="#portable">便携化做了什么</a>
+  <a href="#usage">怎么用</a>
+  <a href="#caution">注意事项</a>
+  <a href="#tree">目录结构</a>
+  <a href="#faq">常见问题</a>
+</nav>
+
+<!-- ========== 1 ========== -->
+<h2 id="what">一、这是个什么软件</h2>
+
+<p>你用英文描述想要的音乐——曲风、乐器、调式、拍号、速度、和弦走向、情绪——它生成一首完整的曲子，并同时给出<strong>可编辑的 MIDI 乐谱</strong>和<strong>可直接播放的音频</strong>。</p>
+
+<h3>它和"文字生成音乐"的 AI 不一样</h3>
+
+<p>它<strong>不是</strong>文字直接生成音频波形的端到端模型，而是一个<strong>符号音乐（MIDI）生成框架</strong>。这个区别决定了它能不能用来创作：</p>
+
+<div class="vs">
+  <div class="card bad">
+    <h4><span class="dot bad"></span>端到端音频模型</h4>
+    <ul>
+      <li>没有中间产物，直接出波形</li>
+      <li>生成完基本不能改</li>
+      <li>只能反复重抽，碰运气</li>
+      <li>结构、和声不受控</li>
+    </ul>
+  </div>
+  <div class="card good">
+    <h4><span class="dot good"></span>Amadeus（本软件）</h4>
+    <ul>
+      <li>先出 MIDI 乐谱，再渲染音频</li>
+      <li>改音符、换乐器、改速度都行</li>
+      <li>结果可以继续放进音乐软件制作</li>
+      <li>结构、和声被显式建模</li>
+    </ul>
+  </div>
+</div>
+
+<h3>输入与输出</h3>
+
+<p>输入一段英文描述：</p>
+<pre><code>A soothing pop song that evokes feelings of love and relaxation,
+featuring a gentle blend of piano, flute, violin, and acoustic guitar.
+Set in the key of C major with a 4/4 time signature, the piece moves
+at an Andante tempo, creating a meditative and emotional atmosphere.</code></pre>
+
+<p>输出两个文件：</p>
+
+<div class="grid">
+  <div class="card">
+    <h4>outputs/generated.mid</h4>
+    <p class="sub">标准 MIDI 文件，可直接拖进任何音乐软件继续编辑</p>
+  </div>
+  <div class="card">
+    <h4>outputs/music/generated.wav</h4>
+    <p class="sub">已经渲染好的音频，双击就能听</p>
+  </div>
+</div>
+
+<h3>内部是怎么工作的</h3>
+
+<div class="grid">
+  <div class="card">
+    <h4>① 自回归 Transformer</h4>
+    <p class="sub">决定「弹哪些音」，像作曲一样一个音一个音往下写</p>
+  </div>
+  <div class="card">
+    <h4>② 离散扩散模型</h4>
+    <p class="sub">决定「每个音怎么弹」，负责时值、力度、演奏法等细节</p>
+  </div>
+  <div class="card">
+    <h4>③ 表征优化</h4>
+    <p class="sub">从多个候选里挑出质量最好的那个</p>
+  </div>
+</div>
+
+<p class="sub">模型规模 1.7 亿参数，权重来自 HuggingFace 上的 <code>longyu1315/Amadeus-S</code>。</p>
+
+<!-- ========== 2 ========== -->
+<h2 id="origin">二、它原本是怎么运行的</h2>
+
+<p class="sub">以及为什么原样拿到 Windows 上一定跑不起来。</p>
+
+<p>原始仓库是作者在<strong>自己的 Linux 服务器</strong>上开发运行的，很多地方直接写死了那台机器的环境。问题分两类。</p>
+
+<h3>第一类：写死了服务器环境</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>位置</th><th>原本的写法</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td>音色库路径</td><td>写死 <code>/data2/suhongju/…/soundfont.sf2</code></td><td>渲染音频时必崩</td></tr>
+    <tr><td>文件名提取</td><td><code>path.split('/')[-1]</code>，4 处</td><td>Windows 用反斜杠，取不到文件名，WAV 被写进奇怪的嵌套目录，界面里找不到</td></tr>
+    <tr><td>一处无用导入</td><td><code>from selectors import EpollSelector</code></td><td>Linux 专属模块，Windows 上直接 <code>ImportError</code>，启动即死</td></tr>
+    <tr><td>文本编码器</td><td>8 处写死 <code>from_pretrained('google/flan-t5-base')</code></td><td>运行时联网拉 947 MB，国内必然超时</td></tr>
+    <tr><td>FluidSynth 调用</td><td>选项写在位置参数之后</td><td>FluidSynth 2.x 解析失败</td></tr>
+    <tr><td>依赖清单</td><td>只有 9 行且不锁版本</td><td>会装出与代码不兼容的新版本，直接崩</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>第二类：外网访问问题</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>资源</th><th>国内实际状况</th></tr></thead>
+  <tbody>
+    <tr><td><code>huggingface.co</code></td><td>直连返回 502，必须走镜像</td></tr>
+    <tr><td>GitHub</td><td>直连被挡</td></tr>
+    <tr><td>PyPI 官方源</td><td>仅约 1.4 MB/s，需换国内镜像</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note warn">
+  <strong>于是原本的安装流程是这样的</strong>
+  <p>装 conda → 建环境 → 装 CUDA 版 PyTorch → 装十几个依赖并处理版本冲突 → 配镜像 → 下 4.9 GB 模型 → 改 6 处源码 → 才能运行。全程至少两三个小时，中间任何一步失败都得自己排查。</p>
+</div>
+
+<!-- ========== 3 ========== -->
+<h2 id="portable">三、为了变成便携软件，做了什么</h2>
+
+<h3>1. 把 Python 解释器装进包里</h3>
+
+<p>Windows 的虚拟环境<strong>天生不能搬</strong>：<code>.venv</code> 里的 <code>python.exe</code> 只是一个 274 KB 的启动器，它靠配置文件里的 <code>home</code> 字段去找真正的 Python。一旦换电脑或换路径，这个指向就失效了。</p>
+
+<p>解决办法：从系统 Python 3.12.10 精简出一份运行时，放进项目内 <code>runtime\python\</code>（<strong>30 MB / 662 个文件</strong>）。</p>
+
+<div class="note warn">
+  <strong>这里藏着最大的一个坑</strong>
+  <p>PyTorch 的 DLL 依赖 VC++ 运行库（<code>msvcp140.dll</code> 等），而 Python 自己目录里<strong>不带</strong>这些文件——它们只存在于 <code>C:\Windows\System32</code>。别人电脑上如果没装过 VC++ 运行库，程序会直接崩。所以特意把运行库一并补进了包内。</p>
+</div>
+
+<h3>2. 让虚拟环境自动适应新路径</h3>
+
+<p><code>启动.bat</code> 每次启动时，用 <code>%~dp0</code> 取得自己当前所在位置，把虚拟环境的配置改写成「<strong>当前目录\runtime\python</strong>」。</p>
+
+<p>于是：改文件夹名、换盘符、换电脑——全部自动适配。</p>
+
+<h3>3. 模型与音色库全部本地化</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>目录</th><th>大小</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr><td><code>models/Amadeus-S/</code></td><td>3.98 GB</td><td>主模型权重 + <strong>自带的音色库</strong></td></tr>
+    <tr><td><code>models/flan-t5-base/</code></td><td>947 MB</td><td>文本编码器</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>代码里所有联网加载的地方都改成了优先查找本地路径。启动时会设置 <code>HF_HUB_OFFLINE=1</code> 与 <code>TRANSFORMERS_OFFLINE=1</code>，<strong>强制离线</strong>，根本不会去联网。</p>
+
+<h3>4. 中文界面与双击入口</h3>
+
+<div class="grid">
+  <div class="card">
+    <h4>启动.bat</h4>
+    <p class="sub">双击即用，自动打开浏览器，不需要任何命令行知识</p>
+  </div>
+  <div class="card">
+    <h4>修复环境.bat</h4>
+    <p class="sub">出问题时双击，逐项自检，能自动修的自动修</p>
+  </div>
+</div>
+
+<h3>5. 修掉 6 处 bug，顺带做了 3 项性能优化</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>问题</th><th>原本情况</th><th>改后</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>无效的编译调用</td>
+      <td><code>torch.compile(model)</code> 的返回值被丢弃，编译从未生效，白白拖慢启动</td>
+      <td>移除，生成速度 13 → <strong>17.6 token/s</strong></td>
+    </tr>
+    <tr>
+      <td>编码器重复加载</td>
+      <td><strong>每点一次「生成」都重新从磁盘读 947 MB</strong></td>
+      <td>加缓存，只读一次</td>
+    </tr>
+    <tr>
+      <td>公网暴露</td>
+      <td><code>share=True</code> 会建立公网隧道，国内常卡死，还把界面暴露到公网</td>
+      <td>改为只监听本机 <code>127.0.0.1</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>6. 清理了 4.85 GB 冗余</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>项目</th><th>大小</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>pip 缓存</td><td>4.09 GB</td><td>装依赖时的下载缓存，纯垃圾</td></tr>
+    <tr><td><code>torch/lib/*.lib</code></td><td>825 MB</td><td>C++ 静态链接库，Python 推理完全用不到</td></tr>
+    <tr><td><code>torch/include/</code></td><td>27.7 MB</td><td>C++ 头文件，用不到</td></tr>
+    <tr><td>其他零散</td><td>约 25 MB</td><td>代码检查工具等</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note ok">
+  <strong>包体从 14.47 GB 降到 9.65 GB</strong>
+  <p>其中模型占 4.9 GB、依赖环境占 4.86 GB，这两项是必需的，没有再压缩的空间。</p>
+</div>
+
+<!-- ========== 4 ========== -->
+<h2 id="usage">四、怎么用</h2>
+
+<h3>三步启动</h3>
+
+<ol class="steps">
+  <li>
+    <b>完整解压</b>
+    把压缩包解压成一个普通文件夹。<br>
+    <span class="sub">⚠️ 不要在压缩软件里直接双击，必须先解压出来。</span>
+  </li>
+  <li>
+    <b>双击 启动.bat</b>
+    就这一个动作，不需要装任何东西。
+  </li>
+  <li>
+    <b>等 2~3 分钟，浏览器自动打开</b>
+    首次启动正在把 2.3 GB 权重载入显存，慢是正常的。
+  </li>
+</ol>
+
+<h3>界面怎么用</h3>
+
+<p>在文本框里用<strong>英文</strong>描述你想要的音乐，点「生成」，等约 2 分钟，结果出现在 <code>outputs/</code> 目录里。</p>
+
+<p>描述覆盖这几个维度，效果最好：</p>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>维度</th><th>可选写法示例</th></tr></thead>
+  <tbody>
+    <tr><td>曲风</td><td>pop / jazz / classical / rock / electronic</td></tr>
+    <tr><td>乐器</td><td>piano, violin, flute, acoustic guitar, drum, electric bass</td></tr>
+    <tr><td>调式</td><td>key of C major / A minor / C# minor</td></tr>
+    <tr><td>拍号与速度</td><td>4/4 time signature，Andante / Allegro / fast tempo</td></tr>
+    <tr><td>和弦走向</td><td>chord progression of G, C, F, G, C</td></tr>
+    <tr><td>情绪</td><td>meditative, emotional, energetic, relaxing, love</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>一个可直接用的完整例子：</p>
+
+<pre><code>A lively and melodic pop rock song featuring piano, overdriven guitar,
+electric drum and electric bass, set in a fast 4/4 tempo and the key of
+C# minor, with a frequently recurring chord progression of D, A, C#m,
+and F# that evokes a mix of emotion and love.</code></pre>
+
+<div class="note">
+  <strong>出问题的时候</strong>
+  <p>双击 <code>修复环境.bat</code>。它会逐项检查解释器、依赖、显卡、模型文件、音色库、VC++ 运行库，并给出明确的处理指引。</p>
+</div>
+
+<!-- ========== 5 ========== -->
+<h2 id="caution">五、⚠️ 必须注意的地方</h2>
+
+<p class="sub">这一节是重点，建议全部看完再用。</p>
+
+<h3>使用前</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th class="num">#</th><th>注意事项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td><strong>必须完整解压</strong></td><td>绝对不要在压缩包里直接双击 <code>启动.bat</code>，包内文件的相对路径关系会失效，必定失败</td></tr>
+    <tr><td class="num">2</td><td><strong>解压到短路径</strong></td><td>建议类似 <code>D:\音乐生成器\</code>。项目内目录层级较深，Windows 路径默认 260 字符上限容易被顶爆</td></tr>
+    <tr><td class="num">3</td><td><strong>需要 64 位 Windows</strong></td><td>Windows 10 / 11 均可</td></tr>
+    <tr><td class="num">4</td><td><strong>预留至少 15 GB 磁盘</strong></td><td>解压后约 10 GB，加上生成过程中产生的临时文件与音频</td></tr>
+    <tr><td class="num">5</td><td><strong>杀毒软件可能误报</strong></td><td>包内含 PyTorch 的一批 <code>.dll</code>，部分杀软会拦截或直接删除。如果启动时报「找不到运行环境」，请检查杀软的隔离区</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>启动时</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th class="num">#</th><th>注意事项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td class="num">6</td><td><strong>首次启动要等 2~3 分钟</strong></td><td>实测 198 秒。正在把 2.3 GB 权重载入显存，<strong>不是卡死</strong>，请别急着关</td></tr>
+    <tr><td class="num">7</td><td><strong>黑色窗口不能关</strong></td><td>那个窗口就是程序本体，关掉它等于关闭软件</td></tr>
+    <tr><td class="num">8</td><td><strong>浏览器没自动打开就手动进</strong></td><td>在浏览器输入 <code>http://127.0.0.1:7860</code></td></tr>
+    <tr><td class="num">9</td><td><strong>端口 7860 不能被占用</strong></td><td>如果提示端口被占用，先关掉占用的程序，或重启后再试</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>运行中</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th class="num">#</th><th>注意事项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td class="num">10</td><td><strong>全程不需要联网</strong></td><td>程序已强制离线模式。断网运行完全正常，联网也不会去下载任何东西</td></tr>
+    <tr><td class="num">11</td><td><strong>提示词必须用英文</strong></td><td>文本编码器是英文模型，中文描述效果很差</td></tr>
+    <tr><td class="num">12</td><td><strong>生成一首约 2 分钟</strong></td><td>这是 512 个音符 token 的正常耗时，耐心等待</td></tr>
+    <tr><td class="num">13</td><td><strong>界面和窗口只能开一个</strong></td><td>同时开两个会争抢显卡显存，容易一起崩</td></tr>
+    <tr><td class="num">14</td><td><strong>生成中不要点第二次「生成」</strong></td><td>会排队或直接报错，等当前这首出来再点下一首</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>性能相关</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th class="num">#</th><th>情况</th><th>表现</th></tr></thead>
+  <tbody>
+    <tr><td class="num">15</td><td><strong>有 NVIDIA 显卡</strong></td><td>自动使用 GPU，一首约 2 分钟</td></tr>
+    <tr><td class="num">16</td><td><strong>没有独立显卡也能跑</strong></td><td>自动退回 CPU 模式，但一首要等 <strong>10 分钟以上</strong>，且占用大量内存</td></tr>
+    <tr><td class="num">17</td><td><strong>AMD 显卡</strong></td><td>本包内置的是 CUDA 版 PyTorch，AMD 显卡无法加速，等同于 CPU 模式</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>搬移与维护</h3>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th class="num">#</th><th>注意事项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td class="num">18</td><td><strong>整个文件夹可以随意搬</strong></td><td>改名、换盘、拷到别的电脑——都没问题。<code>启动.bat</code> 会自动适配新路径</td></tr>
+    <tr><td class="num">19</td><td><strong>但不要单独移动内部文件</strong></td><td>尤其是 <code>runtime\</code>、<code>.venv\</code>、<code>便携工具\</code>，它们必须保持在一起</td></tr>
+    <tr><td class="num">20</td><td><strong>不要手动改 .venv\pyvenv.cfg</strong></td><td>它由 <code>启动.bat</code> 自动维护，手改反而会破坏</td></tr>
+    <tr><td class="num">21</td><td><strong>发现异常先跑 修复环境.bat</strong></td><td>90% 的问题它能直接指出原因</td></tr>
+    <tr><td class="num">22</td><td><strong>.workbuddy\ 目录可以删</strong></td><td>那是开发过程中的记录，与程序运行无关，删掉不影响使用</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note warn">
+  <strong>关于磁盘占用</strong>
+  <p><code>outputs/</code> 会随着使用不断堆积生成的曲子（MIDI + WAV）。长期使用后建议定期清理，避免占用过多磁盘。</p>
+</div>
+
+<!-- ========== 6 ========== -->
+<h2 id="tree">六、目录结构</h2>
+
+<div class="tree"><b>Amadeus/</b>
+├── <em>启动.bat</em>                     <i>← 双击这个开始使用</i>
+├── <em>修复环境.bat</em>                 <i>← 出问题时双击这个</i>
+├── <em>软件介绍.md / 软件介绍.html</em>   <i>← 你正在看的这份说明</i>
+├── 上手教程.md                   <i>← 详细技术教程（含原理讲解与排错手册）</i>
+│
+├── <b>runtime/python/</b>              <i>← 包内自带的 Python 运行环境（已补 VC++ 运行库）</i>
+├── <b>.venv/</b>                       <i>← Python 依赖环境（PyTorch、Transformers 等）</i>
+├── 便携工具/环境自检.py           <i>← 修复环境.bat 背后的检查逻辑</i>
+│
+├── <b>models/</b>                       <i>← 模型文件（约 4.9 GB）</i>
+│   ├── Amadeus-S/                <i>← 主模型权重 + 音色库 soundfont.sf2</i>
+│   └── flan-t5-base/             <i>← 文本编码器</i>
+│
+├── demo/Amadeus_app_CN.py        <i>← 中文操作界面（启动.bat 会打开它）</i>
+├── generate.py                   <i>← 命令行生成入口</i>
+├── Amadeus/                      <i>← 核心代码：模型结构、编码解码、音频渲染</i>
+├── tools/fluidsynth/             <i>← 用于把 MIDI 渲染成 WAV 的合成器</i>
+│
+└── <b>outputs/</b>                      <i>← 生成结果</i>
+    ├── generated.mid             <i>← MIDI 文件（可编辑）</i>
+    └── music/generated.wav       <i>← 音频文件（可直接播放）</i></div>
+
+<!-- ========== 7 ========== -->
+<h2 id="faq">七、常见问题速查</h2>
+
+<div class="tblwrap">
+<table>
+  <thead><tr><th>现象</th><th>原因与处理</th></tr></thead>
+  <tbody>
+    <tr><td>双击 <code>启动.bat</code> 一闪而过</td><td>没有完整解压，或文件被杀软删除。重新解压／检查隔离区</td></tr>
+    <tr><td>提示「找不到内置的 Python 运行环境」</td><td><code>runtime\</code> 目录缺失，通常是解压不完整或被杀软拦截</td></tr>
+    <tr><td>提示「找不到依赖环境目录 .venv」</td><td>同上，重新完整解压</td></tr>
+    <tr><td>报错缺少 <code>msvcp140.dll</code> 等</td><td>VC++ 运行库问题。包内已附，若仍报错请检查是否被杀软删除</td></tr>
+    <tr><td>卡在「正在把模型载入显存」很久</td><td>首次启动正常需要 2~3 分钟。超过 5 分钟再排查</td></tr>
+    <tr><td>浏览器没自动打开</td><td>手动访问 <code>http://127.0.0.1:7860</code></td></tr>
+    <tr><td>提示端口被占用</td><td>关掉占用 7860 端口的其他程序后重试</td></tr>
+    <tr><td>生成特别慢（10 分钟以上）</td><td>没有检测到 NVIDIA 显卡，已退回 CPU 模式</td></tr>
+    <tr><td>显示显存不足</td><td>关掉其他占用显卡的程序，或把生成长度调小</td></tr>
+    <tr><td>只有 MIDI，没有音频</td><td>音色库或 FluidSynth 出问题，跑一次 <code>修复环境.bat</code></td></tr>
+    <tr><td>中文提示词效果差</td><td>改用英文描述</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <strong>以上都没解决？</strong>
+  <p>双击 <code>修复环境.bat</code>，把输出的内容留下来。它包含完整的诊断信息，能够直接定位问题。</p>
+</div>
+
+<hr>
+
+<footer>
+  <p><strong>模型来源</strong>　权重 <code>longyu1315/Amadeus-S</code>　·　文本编码器 <code>google/flan-t5-base</code></p>
+  <p>本便携包在原仓库基础上做了 Windows 兼容性修复、离线化、运行时内置与性能优化，<br>未改动模型结构与生成算法，生成质量与原版一致。</p>
+  <p style="margin-top:22px;color:#a0a0b4">祝创作愉快 🎵</p>
+</footer>
+
+</div>
+</body>
+</html>
