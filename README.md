@@ -6,3 +6,7 @@ Author王异留言（2026-09-16）：
 该项目没有release包，拉取代码以后配置好了文件，并且进行了大幅修改以实现便携软件化。
 
 使用工具：Workbuddy、Deepseek-V4.1-Flash。
+
+受到github上传限制，Releases包以分卷形式上传。
+
+也可前往网盘下载：https://pan.quark.cn/s/fa97e1f1eb90
